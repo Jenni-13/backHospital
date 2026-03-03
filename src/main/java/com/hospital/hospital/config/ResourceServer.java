@@ -59,7 +59,7 @@ public class ResourceServer {
                         .requestMatchers("/medicamentos/**").hasAnyAuthority("PACIENTE", "MEDICO")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .bearerTokenResolver(cookieBearerTokenResolver()) // 👈 esto faltaba
+                        .bearerTokenResolver(cookieBearerTokenResolver()) 
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
@@ -67,26 +67,37 @@ public class ResourceServer {
         return http.build();
     }
 
-    // 👈 este método faltaba completo
+    
     @Bean
-    public BearerTokenResolver cookieBearerTokenResolver() {
-        return (HttpServletRequest request) -> {
-            // Primero intenta leer de la cookie
-            if (request.getCookies() != null) {
-                for (Cookie cookie : request.getCookies()) {
-                    if ("access_token".equals(cookie.getName())) {
-                        return cookie.getValue();
-                    }
+public BearerTokenResolver cookieBearerTokenResolver() {
+    return (HttpServletRequest request) -> {
+        String path = request.getRequestURI();
+
+        // Rutas públicas — no leer token para evitar que Spring intente validarlo
+        if (path.startsWith("/swagger-ui") ||
+            path.startsWith("/v3/api-docs") ||
+            path.equals("/swagger-ui.html")) {
+            return null;
+        }
+
+        // Primero intenta leer de la cookie
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("access_token".equals(cookie.getName())) {
+                    return cookie.getValue();
                 }
             }
-            // Si no hay cookie, lee el header Authorization (Thunder Client)
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                return authHeader.substring(7);
-            }
-            return null;
-        };
-    }
+        }
+
+        // Si no hay cookie, lee el header Authorization
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+
+        return null;
+    };
+}
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
