@@ -13,4 +13,6 @@ public interface RecetaRepository extends JpaRepository<Receta, Integer> {
 
     @Query("SELECT r FROM Receta r WHERE r.cita.paciente.idPaciente = :idPaciente")
     List<Receta> findByPacienteId(@Param("idPaciente") Integer idPaciente);
+
+    boolean existsByFolio(String folio);
 }
