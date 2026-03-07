@@ -36,9 +36,18 @@ public class ExpedienteController {
 
     @PostMapping
     public ResponseEntity<Object> createExpediente(@RequestBody Expediente expediente) {
-        Expediente nuevo = expedienteService.saveExpediente(expediente);
-        // ÉXITO: Envía solo los datos del nuevo expediente
-        return generarRespuesta(nuevo, "Expediente creado exitosamente", HttpStatus.CREATED);
+        try {
+            Long idPaciente = JwtUtil.getIdUsuario().longValue(); // Obtiene el ID del paciente desde el token JWT
+            
+            Paciente paciente = pacienteService.findById(idPaciente).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+            
+            expediente.setPaciente(paciente); // Asigna el objeto paciente al expediente
+            
+            Expediente nuevo = expedienteService.saveExpediente(expediente);
+            return generarRespuesta(nuevo, "Expediente creado exitosamente", HttpStatus.CREATED);
+        } catch (Exception e) {
+            return generarRespuesta(null, "Error al crear el expediente: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping

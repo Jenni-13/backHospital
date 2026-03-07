@@ -35,8 +35,8 @@ public class DiagnosticoController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createDiagnostico(@RequestBody Diagnostico diagnostico) {
-        Diagnostico nuevo = diagnosticoService.saveDiagnostico(diagnostico); 
+    public ResponseEntity<Object> createDiagnostico(@RequestBody Diagnostico diagnostico, @RequestParam Long idCita) {
+        Diagnostico nuevo = diagnosticoService.saveDiagnostico(diagnostico, idCita); 
         return generarRespuesta(nuevo, "Diagnóstico creado exitosamente", HttpStatus.CREATED);
     }
 

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.hospital.hospital.model.repository.DiagnosticoRepository;
 import com.hospital.hospital.model.entity.Diagnostico;
+import com.hospital.hospital.model.entity.Cita;
+import com.hospital.hospital.model.repository.CitaRepository;
 
 @Service
 public class DiagnosticoService {
@@ -16,7 +18,11 @@ public class DiagnosticoService {
         this.diagnosticoRepository = diagnosticoRepository;
     } //constructor para inyectar el repositorio
     
-    public Diagnostico saveDiagnostico(Diagnostico diagnostico) {
+    private CitaRepository citaRepository;
+    
+    public Diagnostico saveDiagnostico(Diagnostico diagnostico, Long idCita) {
+        Cita cita = citaRepository.findById(idCita).orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        diagnostico.setCita(cita);
         return diagnosticoRepository.save(diagnostico);
     } //guardar diagnostico
     
@@ -67,8 +73,8 @@ public class DiagnosticoService {
                 existente.setFun_alta(actualizado.getFun_alta());
             }
 
-            if (actualizado.getIdCita() != null) {
-                existente.setIdCita(actualizado.getIdCita());
+            if (actualizado.getCita() != null) {
+                existente.setCita(actualizado.getCita());
             }
 
             return diagnosticoRepository.save(existente);
