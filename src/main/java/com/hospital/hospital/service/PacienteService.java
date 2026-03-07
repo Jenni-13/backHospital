@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hospital.hospital.model.dto.PacienteDTO;
+import com.hospital.hospital.model.entity.Direccion;
 import com.hospital.hospital.model.entity.Paciente;
 import com.hospital.hospital.model.entity.Usuario;
 import com.hospital.hospital.model.repository.PacienteRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +25,23 @@ public class PacienteService {
     private final UsuarioRepository usuarioRepository;
     private final PacienteRepository pacienteRepository;
 
-    public PacienteDTO obtenerPorId(Integer id) {
-        Paciente paciente = pacienteRepository.obtenerConUsuario(id)
+    public PacienteDTO obtenerPorIdUsuario(Integer idUsuario) {
+        Paciente paciente = pacienteRepository.obtenerConUsuarioPorIdUsuario(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        return convertirADTO(paciente);
+    }
+
+    public List<PacienteDTO> obtenerTodos() {
+        return pacienteRepository.obtenerTodosConUsuario()
+                .stream()
+                .map(this::convertirADTO)
+                .toList();
+    }
+
+    private PacienteDTO convertirADTO(Paciente paciente) {
 
         PacienteDTO dto = new PacienteDTO();
+
         dto.setIdPaciente(paciente.getIdPaciente());
         dto.setNombre(paciente.getNombre());
         dto.setApPaterno(paciente.getApPaterno());
@@ -36,22 +50,27 @@ public class PacienteService {
         dto.setNss(paciente.getNss());
         dto.setFechaNacimiento(paciente.getFechaNacimiento());
         dto.setSexo(paciente.getSexo().name());
-        dto.setTipoSangre(paciente.getTipoSangre().name());
+        dto.setTipoSangre(paciente.getTipoSangre() != null ? paciente.getTipoSangre().getValor() : null);
         dto.setTelefono(paciente.getTelefono());
         dto.setTelefonoEmergencias(paciente.getTelefonoEmergencias());
         dto.setFechaAlta(paciente.getFechaAlta());
         dto.setCorreo(paciente.getUsuario().getCorreo());
+        dto.setEstadoUsuario(paciente.getUsuario().getEstado().name());
 
+        // Dirección
         if (paciente.getDireccion() != null) {
-            PacienteDTO.DireccionDTO dirDTO = new PacienteDTO.DireccionDTO();
-            dirDTO.setCalle(paciente.getDireccion().getCalle());
-            dirDTO.setNumExt(paciente.getDireccion().getNumExt());
-            dirDTO.setNumInt(paciente.getDireccion().getNumInt());
-            dirDTO.setColonia(paciente.getDireccion().getColonia());
-            dirDTO.setCp(paciente.getDireccion().getCp());
-            dirDTO.setLocalidad(paciente.getDireccion().getLocalidad());
-            dirDTO.setEstado(paciente.getDireccion().getEstado());
-            dto.setDireccion(dirDTO);
+            Direccion dir = paciente.getDireccion();
+            if (dir == null) {
+                dir = new Direccion();
+            }
+            dir.setCalle(paciente.getDireccion().getCalle());
+            dir.setNumExt(paciente.getDireccion().getNumExt());
+            dir.setNumInt(paciente.getDireccion().getNumInt());
+            dir.setColonia(paciente.getDireccion().getColonia());
+            dir.setCp(paciente.getDireccion().getCp());
+            dir.setLocalidad(paciente.getDireccion().getLocalidad());
+            dir.setEstado(paciente.getDireccion().getEstado());
+            paciente.setDireccion(dir);
         }
 
         if (paciente.getUnidadMedica() != null) {
@@ -68,10 +87,8 @@ public class PacienteService {
         return dto;
     }
 
-    @Transactional
-    public Paciente actualizar(Integer id, Paciente pacienteActualizado) {
-
-        Paciente paciente = pacienteRepository.obtenerConUsuario(id)
+    public Paciente actualizarPorIdUsuario(Integer idUsuario, Paciente pacienteActualizado) {
+        Paciente paciente = pacienteRepository.obtenerConUsuarioPorIdUsuario(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
         // Datos personales

@@ -3,6 +3,7 @@ package com.hospital.hospital.model.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -41,6 +42,9 @@ public class Cita {
     @Column(name = "estado")
     private EstadoCita estado = EstadoCita.pendiente;
 
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
+
     @ManyToOne
     @JoinColumn(name = "id_paciente")
     private Paciente paciente;
@@ -50,10 +54,10 @@ public class Cita {
     private Medico medico;
 
     public enum EstadoCita {
-        pendiente, proceso, cancelada, completada
+        pendiente, proceso, cancelada, completada, archivada
     }
 
     public enum TipoCita {
-        primera_vez, subsecuente, urgencia, referida
+        primera_vez, subsecuente, urgencia, referida, archivada
     }
 }

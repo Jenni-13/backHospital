@@ -19,6 +19,7 @@ public class PacienteDTO {
     private String telefonoEmergencias;
     private LocalDateTime fechaAlta;
     private String correo;
+    private String estadoUsuario;
 
     // Dirección
     private DireccionDTO direccion;

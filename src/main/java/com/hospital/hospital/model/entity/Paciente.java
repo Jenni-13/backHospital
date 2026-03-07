@@ -54,7 +54,7 @@ public class Paciente {
     @Column(name = "fecha_alta")
     private LocalDateTime fechaAlta;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "id_direccion")
     private Direccion direccion;
 
@@ -92,7 +92,10 @@ public class Paciente {
         @JsonCreator
         public static TipoSangre fromValor(String v) {
             for (TipoSangre ts : values()) {
-                if (ts.valor.equalsIgnoreCase(v)) return ts;
+
+                if (ts.valor.equalsIgnoreCase(v))
+                    return ts;
+
             }
             throw new IllegalArgumentException("Tipo de sangre inválido: " + v);
         }

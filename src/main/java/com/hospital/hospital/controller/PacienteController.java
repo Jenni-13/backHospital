@@ -1,5 +1,6 @@
 package com.hospital.hospital.controller;
 
+import com.hospital.hospital.model.dto.PacienteDTO;
 import com.hospital.hospital.model.entity.Paciente;
 import com.hospital.hospital.service.PacienteService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/paciente")
@@ -36,23 +38,31 @@ public class PacienteController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerPorId(@PathVariable Integer id) {
+    // Traer paciente por id_usuario
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<?> obtenerPorIdUsuario(@PathVariable Integer idUsuario) {
         try {
-            return ResponseEntity.ok(service.obtenerPorId(id));
+            return ResponseEntity.ok(service.obtenerPorIdUsuario(idUsuario));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(
-            @PathVariable Integer id,
+    // Actualizar paciente por id_usuario
+    @PutMapping("/usuario/{idUsuario}")
+    public ResponseEntity<?> actualizarPorIdUsuario(
+            @PathVariable Integer idUsuario,
             @RequestBody Paciente paciente) {
         try {
-            return ResponseEntity.ok(service.actualizar(id, paciente));
+            return ResponseEntity.ok(service.actualizarPorIdUsuario(idUsuario, paciente));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
-}
+
+    // Traer todos los pacientes
+    @GetMapping
+    public ResponseEntity<List<PacienteDTO>> obtenerTodos() {
+        return ResponseEntity.ok(service.obtenerTodos());
+    }
+}  
