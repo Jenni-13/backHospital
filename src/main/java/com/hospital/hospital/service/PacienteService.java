@@ -1,12 +1,12 @@
 package com.hospital.hospital.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hospital.hospital.model.dto.PacienteDTO;
 import com.hospital.hospital.model.entity.Direccion;
 import com.hospital.hospital.model.entity.Paciente;
 import com.hospital.hospital.model.entity.Usuario;
+import com.hospital.hospital.model.repository.DireccionRepository;
 import com.hospital.hospital.model.repository.PacienteRepository;
 import com.hospital.hospital.model.repository.UsuarioRepository;
 
@@ -24,6 +24,7 @@ public class PacienteService {
     private final PasswordEncoder passwordEncoder;
     private final UsuarioRepository usuarioRepository;
     private final PacienteRepository pacienteRepository;
+    private final DireccionRepository direccionRepository;
 
     public PacienteDTO obtenerPorIdUsuario(Integer idUsuario) {
         Paciente paciente = pacienteRepository.obtenerConUsuarioPorIdUsuario(idUsuario)
@@ -123,30 +124,38 @@ public class PacienteService {
         return pacienteRepository.save(paciente);
     }
 
+
     @Transactional
     public Paciente registrarPaciente(String correo, String contrasena, String nombre,
-            String apPaterno, String apMaterno, LocalDate fechaNacimiento,
-            Paciente.Sexo sexo, String telefono, Paciente.TipoSangre tipoSangre) {
+            String apPaterno, String apMaterno, String nss, String curp,
+            LocalDate fechaNacimiento, Paciente.Sexo sexo, String telefono,
+            String telefonoEmergencia, Paciente.TipoSangre tipoSangre, Direccion direccion) {
 
         if (usuarioRepository.existsByCorreo(correo)) {
             throw new RuntimeException("El correo ya está registrado: " + correo);
         }
 
+        // Guardar dirección primero
+        Direccion direccionGuardada = direccionRepository.save(direccion);
+
         Usuario usuario = new Usuario();
         usuario.setCorreo(correo);
         usuario.setContrasena(passwordEncoder.encode(contrasena));
         usuario.setRol(Usuario.Rol.PACIENTE);
-
         usuarioRepository.save(usuario);
 
         Paciente paciente = new Paciente();
         paciente.setNombre(nombre);
         paciente.setApPaterno(apPaterno);
         paciente.setApMaterno(apMaterno);
+        paciente.setNss(nss);
+        paciente.setCurp(curp);
         paciente.setFechaNacimiento(fechaNacimiento);
         paciente.setSexo(sexo);
         paciente.setTelefono(telefono);
+        paciente.setTelefonoEmergencias(telefonoEmergencia);
         paciente.setTipoSangre(tipoSangre);
+        paciente.setDireccion(direccionGuardada); 
         paciente.setUsuario(usuario);
 
         return pacienteRepository.save(paciente);
