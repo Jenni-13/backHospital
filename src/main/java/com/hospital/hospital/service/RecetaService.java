@@ -35,7 +35,7 @@ public class RecetaService {
             dto.setEstado(receta.getEstado().name());
 
             List<RecetaDTO.MedicamentoDTO> medicamentos = medicamentoRepository
-                    .findByIdReceta(Long.valueOf(receta.getIdReceta()))
+                    .findByRecetaIdReceta(receta.getIdReceta())
                     .stream().map(m -> {
                         RecetaDTO.MedicamentoDTO medDTO = new RecetaDTO.MedicamentoDTO();
                         medDTO.setNombre(m.getNombre());

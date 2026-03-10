@@ -25,20 +25,24 @@ public class ExpedienteService {
     // ✅ Guardar expediente
     public Expediente saveExpediente(Expediente expediente) {
 
-        Long idUsuario = JwtUtil.getIdUsuario().longValue();
+        Integer idUsuario = JwtUtil.getIdUsuario();
 
         // Buscar paciente por id_usuario
-        Paciente paciente = pacienteRepository
-                .findByUsuario_IdUsuario(idUsuario)
+        Paciente idPaciente = pacienteRepository
+                .obtenerConUsuario(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
-        expediente.setPaciente(paciente);
+        expediente.setIdPaciente(idPaciente);
 
         return expedienteRepository.save(expediente);
     }
 
     public List<Expediente> getAllExpedientes() {
         return expedienteRepository.findAll();
+    }
+
+    public List<Expediente> getExpedientesByPaciente(Integer idPaciente) {
+        return expedienteRepository.findByIdPaciente_IdPaciente(idPaciente);
     }
 
     public Expediente getExpedienteById(Long id) {

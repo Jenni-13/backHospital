@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import com.hospital.hospital.model.entity.Medicamento;
 
 @Repository
-public interface MedicamentoRepository extends JpaRepository<Medicamento, Long> {
-    List<Medicamento> findByIdReceta(Long idReceta);
+public interface MedicamentoRepository extends JpaRepository<Medicamento, Integer> {
+
+    List<Medicamento> findByRecetaIdReceta(Integer idReceta);
+
 }

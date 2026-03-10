@@ -7,5 +7,5 @@ import com.hospital.hospital.model.entity.Diagnostico;
 
 @Repository
 public interface DiagnosticoRepository extends JpaRepository<Diagnostico, Long> {
-    List<Diagnostico> findByIdCita(Long idCita);
+    List<Diagnostico> findByCita_IdCita(Long idCita);
 }

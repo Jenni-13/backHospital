@@ -47,11 +47,11 @@ public class Expediente {
     private LocalDateTime fechaActualizacion;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_paciente", referencedColumnName = "id_paciente", insertable = false, updatable = false)
-    private Paciente paciente; 
+    @JoinColumn(name = "id_paciente", nullable = false)
+    private Paciente idPaciente; 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_medico", referencedColumnName = "id_medico", insertable = false, updatable = false)
+    @JoinColumn(name = "id_medico", nullable = false)
     private Medico medico; 
 
     public Expediente() {}
@@ -95,8 +95,8 @@ public class Expediente {
     public LocalDateTime getFechaActualizacion() {return fechaActualizacion;}
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) {this.fechaActualizacion = fechaActualizacion;}
 
-    public Paciente getIdPaciente() { return paciente; }
-    public void setIdPaciente(Paciente idPaciente) { this.paciente = idPaciente; }
+    public Paciente getIdPaciente() { return idPaciente; }
+    public void setIdPaciente(Paciente idPaciente) { this.idPaciente = idPaciente; }
 
     public Medico getIdMedico() { return medico; }
     public void setIdMedico(Medico idMedico) { this.medico = idMedico; }

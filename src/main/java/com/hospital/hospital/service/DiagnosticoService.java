@@ -14,13 +14,15 @@ public class DiagnosticoService {
 
     // @Autowired
     private final DiagnosticoRepository diagnosticoRepository;
-    public DiagnosticoService(DiagnosticoRepository diagnosticoRepository) {
-        this.diagnosticoRepository = diagnosticoRepository;
-    } //constructor para inyectar el repositorio
-    
     private CitaRepository citaRepository;
     
-    public Diagnostico saveDiagnostico(Diagnostico diagnostico, Long idCita) {
+    public DiagnosticoService(DiagnosticoRepository diagnosticoRepository,
+                              CitaRepository citaRepository) {
+        this.diagnosticoRepository = diagnosticoRepository;
+        this.citaRepository = citaRepository;
+    }//constructor para inyectar el repositorio
+    
+    public Diagnostico saveDiagnostico(Diagnostico diagnostico, Integer idCita) {
         Cita cita = citaRepository.findById(idCita).orElseThrow(() -> new RuntimeException("Cita no encontrada"));
         diagnostico.setCita(cita);
         return diagnosticoRepository.save(diagnostico);
@@ -35,7 +37,7 @@ public class DiagnosticoService {
     } //obtener diagnostico por id
 
     public List<Diagnostico> getDiagnosticosByCita(Long idCita) {
-        return diagnosticoRepository.findByIdCita(idCita);
+        return diagnosticoRepository.findByCita_IdCita(idCita);
     } //obtener diagnosticos por id de cita
 
     public void deleteDiagnostico(Long id_diagnostico) {
