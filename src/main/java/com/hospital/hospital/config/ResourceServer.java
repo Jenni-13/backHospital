@@ -49,6 +49,14 @@ public class ResourceServer {
                         .requestMatchers(HttpMethod.GET, "/api/cita/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/cita/**").permitAll()
 
+                        // Rutas protegidas (necesitan token) jenni 
+                        .requestMatchers(HttpMethod.GET, "/api/paciente/mi-perfil").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/receta/mis-recetas").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/cita/mis-citas").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/cita/citas-medico").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/cita/agendar").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/cita/cancelar/**").authenticated()
+
                         .requestMatchers("/api/medico/**").hasAuthority("MEDICO")
                         .requestMatchers("/api/paciente/**").hasAnyAuthority("PACIENTE", "MEDICO")
                         .requestMatchers("/expedientes/**").hasAnyAuthority("PACIENTE", "MEDICO")
@@ -59,7 +67,7 @@ public class ResourceServer {
                         .requestMatchers("/medicamentos/**").hasAnyAuthority("PACIENTE", "MEDICO")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .bearerTokenResolver(cookieBearerTokenResolver()) 
+                        .bearerTokenResolver(cookieBearerTokenResolver())
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
@@ -67,37 +75,36 @@ public class ResourceServer {
         return http.build();
     }
 
-    
     @Bean
-public BearerTokenResolver cookieBearerTokenResolver() {
-    return (HttpServletRequest request) -> {
-        String path = request.getRequestURI();
+    public BearerTokenResolver cookieBearerTokenResolver() {
+        return (HttpServletRequest request) -> {
+            String path = request.getRequestURI();
 
-        // Rutas públicas — no leer token para evitar que Spring intente validarlo
-        if (path.startsWith("/swagger-ui") ||
-            path.startsWith("/v3/api-docs") ||
-            path.equals("/swagger-ui.html")) {
-            return null;
-        }
+            // Rutas públicas — no leer token para evitar que Spring intente validarlo
+            if (path.startsWith("/swagger-ui") ||
+                    path.startsWith("/v3/api-docs") ||
+                    path.equals("/swagger-ui.html")) {
+                return null;
+            }
 
-        // Primero intenta leer de la cookie
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("access_token".equals(cookie.getName())) {
-                    return cookie.getValue();
+            // Primero intenta leer de la cookie
+            if (request.getCookies() != null) {
+                for (Cookie cookie : request.getCookies()) {
+                    if ("access_token".equals(cookie.getName())) {
+                        return cookie.getValue();
+                    }
                 }
             }
-        }
 
-        // Si no hay cookie, lee el header Authorization
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
+            // Si no hay cookie, lee el header Authorization
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                return authHeader.substring(7);
+            }
 
-        return null;
-    };
-}
+            return null;
+        };
+    }
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {

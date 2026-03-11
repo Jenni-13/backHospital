@@ -25,12 +25,25 @@ public interface CitaRepository extends JpaRepository<Cita, Integer> {
     @Query("SELECT m FROM Medico m WHERE m.turno = :turno AND m.activo = true")
     List<Medico> findMedicosByTurno(@Param("turno") Medico.Turno turno);
 
+    // Para CANCELADAS — usa fecha_creacion (LocalDateTime)
     @Modifying
-    @Query("UPDATE Cita c SET c.estado = :archivada WHERE c.estado = :cancelada AND c.fechaCreacion <= :fecha")
+    @Query("UPDATE Cita c SET c.estado = :nuevoEstado " +
+            "WHERE c.estado = :estadoCancelada " +
+            "AND c.fechaCreacion < :hace2Dias")
     void archivarCitasCanceladas(
-            @Param("archivada") Cita.EstadoCita archivada,
-            @Param("cancelada") Cita.EstadoCita cancelada,
-            @Param("fecha") LocalDateTime fecha);
+            @Param("nuevoEstado") Cita.EstadoCita nuevoEstado,
+            @Param("estadoCancelada") Cita.EstadoCita estadoCancelada,
+            @Param("hace2Dias") LocalDateTime hace2Dias);
+
+    // Para PENDIENTES — usa fecha (LocalDate)
+    @Modifying
+    @Query("UPDATE Cita c SET c.estado = :nuevoEstado " +
+            "WHERE c.estado = :estadoPendiente " +
+            "AND c.fecha < :hace2Dias")
+    void archivarCitasPendientes(
+            @Param("nuevoEstado") Cita.EstadoCita nuevoEstado,
+            @Param("estadoPendiente") Cita.EstadoCita estadoPendiente,
+            @Param("hace2Dias") LocalDate hace2Dias);
 
     // Citas por medico
     List<Cita> findByMedicoIdMedico(Integer idMedico);

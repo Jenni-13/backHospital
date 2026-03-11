@@ -3,6 +3,7 @@ package com.hospital.hospital.controller;
 import com.hospital.hospital.model.dto.RecetaDTO;
 import com.hospital.hospital.model.dto.RecetaRequestDTO;
 import com.hospital.hospital.service.RecetaService;
+import com.hospital.hospital.util.JwtUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,27 +22,29 @@ public class RecetaController {
 
     private final RecetaService recetaService;
 
-    // Ver todas las recetas del paciente con sus medicamentos
-    @GetMapping("/paciente/{idPaciente}")
-    public ResponseEntity<?> obtenerRecetas(@PathVariable Integer idPaciente) {
+    // Que el paciente pueda ver su propia recta y medicamentos (autenticado)
+    @GetMapping("/mis-recetas")
+    public ResponseEntity<?> getMisRecetas() {
         try {
-            List<RecetaDTO> recetas = recetaService.obtenerRecetasPorPaciente(idPaciente);
+            Integer idUsuario = JwtUtil.getIdUsuario();
+            List<RecetaDTO> recetas = recetaService.obtenerRecetasPorPaciente(idUsuario);
             return ResponseEntity.ok(recetas);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
     // Agrega este endpoint al controlador existente
-    @PostMapping 
+    @PostMapping
     public ResponseEntity<?> crearReceta(@RequestBody @Valid RecetaRequestDTO request) {
-    try {
-        RecetaDTO receta = recetaService.crearReceta(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(receta);
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(Map.of("error", "Valor de enum inválido: " + e.getMessage()));
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        try {
+            RecetaDTO receta = recetaService.crearReceta(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(receta);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Valor de enum inválido: " + e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
     }
-}
 }
