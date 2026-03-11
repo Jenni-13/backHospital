@@ -33,7 +33,7 @@ public class RecetaController {
     }
 
     // Agrega este endpoint al controlador existente
-    @PostMapping
+    @PostMapping 
     public ResponseEntity<?> crearReceta(@RequestBody @Valid RecetaRequestDTO request) {
     try {
         RecetaDTO receta = recetaService.crearReceta(request);
