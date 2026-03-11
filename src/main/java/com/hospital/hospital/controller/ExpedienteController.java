@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.hospital.hospital.model.entity.Expediente;
 import com.hospital.hospital.service.ExpedienteService;
+import com.hospital.hospital.model.entity.Paciente;
+import com.hospital.hospital.service.PacienteService;
+import com.hospital.hospital.util.JwtUtil;
 
 @RestController
 @RequestMapping("/expedientes")
@@ -17,9 +20,11 @@ import com.hospital.hospital.service.ExpedienteService;
 public class ExpedienteController {
 
     private final ExpedienteService expedienteService;
+    private final PacienteService pacienteService;
 
-    public ExpedienteController(ExpedienteService expedienteService) {
+    public ExpedienteController(ExpedienteService expedienteService, PacienteService pacienteService) {
         this.expedienteService = expedienteService;
+        this.pacienteService = pacienteService;
     }
 
     // método solo se usará para ERRORES o mensajes específicos
@@ -36,9 +41,17 @@ public class ExpedienteController {
 
     @PostMapping
     public ResponseEntity<Object> createExpediente(@RequestBody Expediente expediente) {
-        Expediente nuevo = expedienteService.saveExpediente(expediente);
-        // ÉXITO: Envía solo los datos del nuevo expediente
-        return generarRespuesta(nuevo, "Expediente creado exitosamente", HttpStatus.CREATED);
+        try {
+
+            Expediente nuevo = expedienteService.saveExpediente(expediente);
+
+            return generarRespuesta(nuevo, "Expediente creado exitosamente", HttpStatus.CREATED);
+
+        } catch (Exception e) {
+            return generarRespuesta(null,
+                    "Error al crear el expediente: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping
@@ -59,7 +72,7 @@ public class ExpedienteController {
     } 
 
     @GetMapping("/paciente/{idPaciente}")
-    public ResponseEntity<Object> getExpedientesByPaciente(@PathVariable Long idPaciente) { 
+    public ResponseEntity<Object> getExpedientesByPaciente(@PathVariable Integer idPaciente) { 
         List<Expediente> e = expedienteService.getExpedientesByPaciente(idPaciente);
         
         if (e != null && !e.isEmpty()) {

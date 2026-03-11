@@ -40,8 +40,9 @@ public class Diagnostico {
     @Column(columnDefinition = "TEXT")
     private String fun_alta;
 
-    @Column(name = "id_cita")
-    private Integer idCita; 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cita", referencedColumnName = "id_cita", insertable = false, updatable = false)
+    private Cita cita;
 
 
     public Diagnostico() {}
@@ -70,7 +71,7 @@ public class Diagnostico {
     public String getFun_alta() { return fun_alta; }
     public void setFun_alta(String fun_alta) { this.fun_alta = fun_alta; }
 
-    public Integer getIdCita() { return idCita; }
-    public void setIdCita(Integer idCita) { this.idCita = idCita; }
+    public Cita getCita() { return cita; }
+    public void setCita(Cita cita) { this.cita = cita; }
 
 }

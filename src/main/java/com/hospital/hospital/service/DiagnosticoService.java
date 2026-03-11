@@ -6,17 +6,25 @@ import org.springframework.stereotype.Service;
 
 import com.hospital.hospital.model.repository.DiagnosticoRepository;
 import com.hospital.hospital.model.entity.Diagnostico;
+import com.hospital.hospital.model.entity.Cita;
+import com.hospital.hospital.model.repository.CitaRepository;
 
 @Service
 public class DiagnosticoService {
 
     // @Autowired
     private final DiagnosticoRepository diagnosticoRepository;
-    public DiagnosticoService(DiagnosticoRepository diagnosticoRepository) {
-        this.diagnosticoRepository = diagnosticoRepository;
-    } //constructor para inyectar el repositorio
+    private CitaRepository citaRepository;
     
-    public Diagnostico saveDiagnostico(Diagnostico diagnostico) {
+    public DiagnosticoService(DiagnosticoRepository diagnosticoRepository,
+                              CitaRepository citaRepository) {
+        this.diagnosticoRepository = diagnosticoRepository;
+        this.citaRepository = citaRepository;
+    }//constructor para inyectar el repositorio
+    
+    public Diagnostico saveDiagnostico(Diagnostico diagnostico, Integer idCita) {
+        Cita cita = citaRepository.findById(idCita).orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        diagnostico.setCita(cita);
         return diagnosticoRepository.save(diagnostico);
     } //guardar diagnostico
     
@@ -29,7 +37,7 @@ public class DiagnosticoService {
     } //obtener diagnostico por id
 
     public List<Diagnostico> getDiagnosticosByCita(Long idCita) {
-        return diagnosticoRepository.findByIdCita(idCita);
+        return diagnosticoRepository.findByCita_IdCita(idCita);
     } //obtener diagnosticos por id de cita
 
     public void deleteDiagnostico(Long id_diagnostico) {
@@ -67,8 +75,8 @@ public class DiagnosticoService {
                 existente.setFun_alta(actualizado.getFun_alta());
             }
 
-            if (actualizado.getIdCita() != null) {
-                existente.setIdCita(actualizado.getIdCita());
+            if (actualizado.getCita() != null) {
+                existente.setCita(actualizado.getCita());
             }
 
             return diagnosticoRepository.save(existente);
