@@ -15,10 +15,9 @@ import java.util.List;
 public interface PacienteRepository extends JpaRepository<Paciente, Integer> {
 
     @Query("SELECT p FROM Paciente p JOIN FETCH p.usuario u WHERE u.idUsuario = :idUsuario")
-    Optional<Paciente> obtenerConUsuarioPorIdUsuario(@Param("idUsuario") Integer idUsuario);
+    Optional<Paciente> obtenerConUsuario(@Param("idUsuario") Integer idUsuario);
 
     @Query("SELECT p FROM Paciente p JOIN FETCH p.usuario")
     List<Paciente> obtenerTodosConUsuario();
 
-    
 }
