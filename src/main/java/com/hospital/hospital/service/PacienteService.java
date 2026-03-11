@@ -27,7 +27,7 @@ public class PacienteService {
     private final DireccionRepository direccionRepository;
 
     public PacienteDTO obtenerPorIdUsuario(Integer idUsuario) {
-        Paciente paciente = pacienteRepository.obtenerConUsuarioPorIdUsuario(idUsuario)
+        Paciente paciente = pacienteRepository.obtenerConUsuario(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
         return convertirADTO(paciente);
     }
@@ -89,7 +89,7 @@ public class PacienteService {
     }
 
     public Paciente actualizarPorIdUsuario(Integer idUsuario, Paciente pacienteActualizado) {
-        Paciente paciente = pacienteRepository.obtenerConUsuarioPorIdUsuario(idUsuario)
+        Paciente paciente = pacienteRepository.obtenerConUsuario(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
         // Datos personales
@@ -124,7 +124,6 @@ public class PacienteService {
         return pacienteRepository.save(paciente);
     }
 
-
     @Transactional
     public Paciente registrarPaciente(String correo, String contrasena, String nombre,
             String apPaterno, String apMaterno, String nss, String curp,
@@ -155,7 +154,7 @@ public class PacienteService {
         paciente.setTelefono(telefono);
         paciente.setTelefonoEmergencias(telefonoEmergencia);
         paciente.setTipoSangre(tipoSangre);
-        paciente.setDireccion(direccionGuardada); 
+        paciente.setDireccion(direccionGuardada);
         paciente.setUsuario(usuario);
 
         return pacienteRepository.save(paciente);
