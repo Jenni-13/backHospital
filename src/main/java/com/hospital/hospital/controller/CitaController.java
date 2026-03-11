@@ -25,8 +25,9 @@ public class CitaController {
     @PostMapping("/agendar")
     public ResponseEntity<?> agendarCita(@RequestBody Map<String, Object> body) {
         try {
+            Integer idPaciente = JwtUtil.getIdUsuario(); // ← del token
             Cita cita = citaService.agendarCita(
-                    (Integer) body.get("idPaciente"),
+                    idPaciente,
                     LocalDate.parse((String) body.get("fecha")),
                     LocalTime.parse((String) body.get("hora")),
                     (String) body.get("motivo"),
@@ -46,6 +47,18 @@ public class CitaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }
     }
+ // Endpoint para que el paciente vea sus citas (autenticado)
+    @GetMapping("/mis-citas")
+    public ResponseEntity<?> getMisCitasPaciente() {
+        try {
+            Integer idUsuario = JwtUtil.getIdUsuario();
+            List<Cita> citas = citaService.obtenerCitasPorPaciente(idUsuario);
+            return ResponseEntity.ok(citas);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+}
 
     @PutMapping("/cancelar/{idCita}")
     public ResponseEntity<?> cancelarCita(@PathVariable Integer idCita) {
@@ -55,7 +68,6 @@ public class CitaController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
-
 
     @GetMapping("/citas-medico")
     public ResponseEntity<?> getMisCitas() {
