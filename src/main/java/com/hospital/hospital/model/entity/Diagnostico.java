@@ -1,13 +1,8 @@
 package com.hospital.hospital.model.entity;
 
 
-import com.hospital.hospital.model.converter.ListToStringConverter;
 import com.hospital.hospital.model.enums.TipoDiagnostico;
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.ArrayList; 
+import jakarta.persistence.*; 
 
 @Entity
 @Table(name = "diagnostico")
@@ -40,6 +35,9 @@ public class Diagnostico {
     @Column(columnDefinition = "TEXT")
     private String fun_alta;
 
+    @Column(name = "id_cita")          // ← este ESCRIBE la FK
+    private Long idCita;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cita", referencedColumnName = "id_cita", insertable = false, updatable = false)
     private Cita cita;
@@ -70,6 +68,9 @@ public class Diagnostico {
 
     public String getFun_alta() { return fun_alta; }
     public void setFun_alta(String fun_alta) { this.fun_alta = fun_alta; }
+
+    public Long getIdCita() { return idCita; }          
+    public void setIdCita(Long idCita) { this.idCita = idCita; }
 
     public Cita getCita() { return cita; }
     public void setCita(Cita cita) { this.cita = cita; }

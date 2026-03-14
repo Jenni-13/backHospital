@@ -55,7 +55,8 @@ public class ResourceServer {
                         .requestMatchers(HttpMethod.GET, "/api/cita/mis-citas").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/cita/citas-medico").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/cita/agendar").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/cita/cancelar/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/cita/cancelar").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/cita/completar").authenticated()
 
                         .requestMatchers("/api/medico/**").hasAuthority("MEDICO")
                         .requestMatchers("/api/paciente/**").hasAnyAuthority("PACIENTE", "MEDICO")

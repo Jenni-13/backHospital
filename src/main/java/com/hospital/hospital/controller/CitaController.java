@@ -1,6 +1,7 @@
 package com.hospital.hospital.controller;
 
 import com.hospital.hospital.model.dto.CitaDTO;
+import com.hospital.hospital.model.dto.CompletarCitaRequest;
 import com.hospital.hospital.model.entity.Cita;
 import com.hospital.hospital.service.CitaService;
 import com.hospital.hospital.util.JwtUtil;
@@ -79,5 +80,13 @@ public class CitaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @PutMapping("/{id}/completar")
+    public ResponseEntity<Void> completarCita(
+            @PathVariable Integer id,
+            @RequestBody CompletarCitaRequest request) {
+        citaService.completarCita(id, request);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,12 +1,22 @@
 package com.hospital.hospital.service;
 
 import com.hospital.hospital.model.dto.CitaDTO;
+import com.hospital.hospital.model.dto.CompletarCitaRequest;
 import com.hospital.hospital.model.entity.Cita;
+import com.hospital.hospital.model.entity.Diagnostico;
+import com.hospital.hospital.model.entity.Medicamento;
 import com.hospital.hospital.model.entity.Medico;
 import com.hospital.hospital.model.entity.Paciente;
+import com.hospital.hospital.model.entity.Receta;
+import com.hospital.hospital.model.entity.SignosVitales;
 import com.hospital.hospital.model.repository.CitaRepository;
+import com.hospital.hospital.model.repository.DiagnosticoRepository;
+import com.hospital.hospital.model.repository.MedicamentoRepository;
 import com.hospital.hospital.model.repository.MedicoRepository;
 import com.hospital.hospital.model.repository.PacienteRepository;
+import com.hospital.hospital.model.repository.RecetaRepository;
+import com.hospital.hospital.model.repository.SignosVitalesRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +26,31 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class CitaService {
 
     private final CitaRepository citaRepository;
-    private final PacienteRepository pacienteRepository;
+    private final SignosVitalesRepository signosVitalesRepository;
+    private final DiagnosticoRepository diagnosticoRepository;
+    private final RecetaRepository recetaRepository;
+    private final MedicamentoRepository medicamentoRepository;
     private final MedicoRepository medicoRepository;
+    private final PacienteRepository pacienteRepository;
+
+    public CitaService(CitaRepository citaRepository,
+                       SignosVitalesRepository signosVitalesRepository,
+                       DiagnosticoRepository diagnosticoRepository,
+                       RecetaRepository recetaRepository,
+                       MedicamentoRepository medicamentoRepository,
+                        MedicoRepository medicoRepository,
+                        PacienteRepository pacienteRepository) {
+        this.citaRepository = citaRepository;
+        this.signosVitalesRepository = signosVitalesRepository;
+        this.diagnosticoRepository = diagnosticoRepository;
+        this.recetaRepository = recetaRepository;
+        this.medicamentoRepository = medicamentoRepository;
+        this.medicoRepository = medicoRepository;
+        this.pacienteRepository = pacienteRepository;
+    }
 
     // Determina el turno según la hora
     private Medico.Turno determinarTurno(LocalTime hora) {
@@ -105,4 +134,75 @@ public class CitaService {
                 .map(CitaDTO::new)
                 .toList();
     }
+
+    @Transactional(rollbackFor = Exception.class)
+public void completarCita(Integer idCita, CompletarCitaRequest request) {
+
+    // 1. Buscar y validar la cita
+    Cita cita = citaRepository.findById(idCita)
+            .orElseThrow(() -> new RuntimeException("Cita no encontrada con id: " + idCita));
+
+    // 2. Signos Vitales
+    CompletarCitaRequest.SignosVitalesDTO svDTO = request.getSignosVitales();
+    if (svDTO != null) {
+        SignosVitales sv = new SignosVitales();
+        sv.setPesoKg(svDTO.getPesoKg());
+        sv.setTallaM(svDTO.getTallaM());
+        sv.setPresionArterial(svDTO.getPresionArterial());
+        sv.setFrecuenciaCardiaca(svDTO.getFrecuenciaCardiaca());
+        sv.setFrecuenciaRespiratoria(svDTO.getFrecuenciaRespiratoria());
+        sv.setTemperatura(svDTO.getTemperatura());
+        sv.setSpo2(svDTO.getSpo2());
+        sv.setGlucosa(svDTO.getGlucosa());
+        sv.setIdCita(idCita.longValue());
+        signosVitalesRepository.save(sv);
+    }
+
+    // 3. Diagnóstico ← CORREGIDO: setIdCita en lugar de setCita
+    // 3. Diagnóstico
+CompletarCitaRequest.DiagnosticoDTO dxDTO = request.getDiagnostico();
+if (dxDTO != null) {
+    Diagnostico dx = new Diagnostico();
+    dx.setCie10(dxDTO.getCie10());
+    dx.setDescripcion(dxDTO.getDescripcion());
+    dx.setTipo(dxDTO.getTipo());
+    dx.setMedicamentos_base(dxDTO.getMedicamentosBase());
+    dx.setTratamiento(dxDTO.getTratamiento());
+    dx.setIndicaciones(dxDTO.getIndicaciones());
+    dx.setFun_alta(dxDTO.getFunAlta());
+    dx.setIdCita(idCita.longValue()); // ← ¿tienes esta línea exactamente así?
+    diagnosticoRepository.save(dx);
+}
+
+    // 4. Receta + Medicamentos
+    CompletarCitaRequest.RecetaDTO recetaDTO = request.getReceta();
+    if (recetaDTO != null) {
+        Receta receta = new Receta();
+        receta.setFolio(recetaDTO.getFolio());
+        receta.setFecha(LocalDate.now());
+        receta.setVencimiento(recetaDTO.getVencimiento());
+        receta.setEstado(Receta.EstadoReceta.activa);
+        receta.setCita(cita);
+        Receta recetaGuardada = recetaRepository.save(receta);
+
+        if (recetaDTO.getMedicamentos() != null) {
+            for (CompletarCitaRequest.MedicamentoDTO medDTO : recetaDTO.getMedicamentos()) {
+                Medicamento med = new Medicamento();
+                med.setNombre(medDTO.getNombre());
+                med.setPresentacion(medDTO.getPresentacion());
+                med.setDosis(medDTO.getDosis());
+                med.setFrecuencia(medDTO.getFrecuencia());
+                med.setDuracion(medDTO.getDuracion());
+                med.setCantidad(medDTO.getCantidad());
+                med.setVia(medDTO.getVia());
+                med.setReceta(recetaGuardada);
+                medicamentoRepository.save(med);
+            }
+        }
+    }
+
+    // 5. Marcar cita como completada
+    cita.setEstado(Cita.EstadoCita.completada);
+    citaRepository.save(cita);
+}
 }
