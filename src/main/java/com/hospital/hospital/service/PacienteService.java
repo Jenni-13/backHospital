@@ -159,4 +159,11 @@ public class PacienteService {
 
         return pacienteRepository.save(paciente);
     }
+
+    public List<PacienteDTO> buscarPacientes(String filtro) {
+    return pacienteRepository.buscarPacientes(filtro)
+            .stream()
+            .map(this::convertirADTO)
+            .toList();
+    }
 }

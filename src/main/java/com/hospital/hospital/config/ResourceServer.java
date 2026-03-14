@@ -51,6 +51,7 @@ public class ResourceServer {
 
                         // Rutas protegidas (necesitan token) jenni 
                         .requestMatchers(HttpMethod.GET, "/api/paciente/mi-perfil").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/paciente/buscar").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/receta/mis-recetas").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/cita/mis-citas").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/cita/citas-medico").authenticated()
