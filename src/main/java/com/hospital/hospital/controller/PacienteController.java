@@ -99,4 +99,11 @@ public class PacienteController {
     public ResponseEntity<List<PacienteDTO>> obtenerTodos() {
         return ResponseEntity.ok(service.obtenerTodos());
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<PacienteDTO>> buscarPacientes(
+        @RequestParam String filtro) {
+
+        return ResponseEntity.ok(service.buscarPacientes(filtro));
+    }
 }

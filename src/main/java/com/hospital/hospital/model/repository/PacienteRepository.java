@@ -20,4 +20,13 @@ public interface PacienteRepository extends JpaRepository<Paciente, Integer> {
     @Query("SELECT p FROM Paciente p JOIN FETCH p.usuario")
     List<Paciente> obtenerTodosConUsuario();
 
+    @Query("""
+    SELECT p FROM Paciente p
+    JOIN FETCH p.usuario u
+    WHERE LOWER(p.nombre) LIKE LOWER(CONCAT('%', :filtro, '%'))
+       OR LOWER(p.apPaterno) LIKE LOWER(CONCAT('%', :filtro, '%'))
+       OR LOWER(p.apMaterno) LIKE LOWER(CONCAT('%', :filtro, '%'))
+       OR LOWER(p.nss) LIKE LOWER(CONCAT('%', :filtro, '%'))""")
+    List<Paciente> buscarPacientes(@Param("filtro") String filtro);
+
 }
