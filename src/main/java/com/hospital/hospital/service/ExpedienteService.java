@@ -32,7 +32,7 @@ public class ExpedienteService {
 
         // Buscar paciente por id_usuario
         Paciente idPaciente = pacienteRepository
-                .obtenerConUsuario(idUsuario)
+                .obtenerConUsuarioPorIdUsuario(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
         expediente.setIdPaciente(idPaciente);
@@ -91,7 +91,7 @@ public class ExpedienteService {
     }
 
     @Transactional
-    public Expediente actualizarExpediente(Integer idExpediente, Map<String, Object> cambios) {
+    public Expediente actualizarExpediente(Long idExpediente, Map<String, Object> cambios) {
 
         //Obtener expediente actual
         Expediente actual = expedienteRepository.findById(idExpediente)
@@ -109,7 +109,7 @@ public class ExpedienteService {
         nuevo.setAnt_patologicos(actual.getAnt_patologicos());
         nuevo.setAnt_quirurgicos(actual.getAnt_quirurgicos());
         nuevo.setAnt_alergicos(actual.getAnt_alergicos());
-        nuevo.setEnf_cronicas(actual.getEnf_cronicas());
+        nuevo.setAnt_cronicas(actual.getAnt_cronicas());
         nuevo.setAnt_ginecoobstetricos(actual.getAnt_ginecoobstetricos());
         nuevo.setObservaciones(actual.getObservaciones());
         nuevo.setFechaApertura(actual.getFechaApertura());
@@ -146,8 +146,8 @@ public class ExpedienteService {
                     nuevo.setAnt_alergicos((String) valor);
                     break;
 
-                case "enf_cronicas":
-                    nuevo.setEnf_cronicas((String) valor);
+                case "ant_cronicas":
+                     nuevo.setAnt_cronicas((String) valor); 
                     break;
 
                 case "ant_ginecoobstetricos":

@@ -84,10 +84,10 @@ public class ExpedienteController {
 
     @PatchMapping("/expediente-update/{id}")
     public ResponseEntity<?> actualizarExpediente(
-            @PathVariable Integer id,
+            @PathVariable Long idExpediente,
             @RequestBody Map<String, Object> cambios) {
 
-        Expediente nuevo = expedienteService.actualizarExpediente(id, cambios);
+        Expediente nuevo = expedienteService.actualizarExpediente(idExpediente, cambios);
 
         return ResponseEntity.ok(nuevo);
     }
