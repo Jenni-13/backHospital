@@ -80,7 +80,17 @@ public class ExpedienteController {
         }
         
         return generarRespuesta(null, "El paciente con ID " + idPaciente + " no tiene expedientes asociados", HttpStatus.NOT_FOUND);
-    }       
+    }   
+
+    @PatchMapping("/expediente-update/{id}")
+    public ResponseEntity<?> actualizarExpediente(
+            @PathVariable Integer id,
+            @RequestBody Map<String, Object> cambios) {
+
+        Expediente nuevo = expedienteService.actualizarExpediente(id, cambios);
+
+        return ResponseEntity.ok(nuevo);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> actualizar(@PathVariable Long id, @RequestBody Expediente actualizado) {
