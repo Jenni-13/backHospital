@@ -1,14 +1,17 @@
 package com.hospital.hospital.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hospital.hospital.model.entity.Expediente;
 import com.hospital.hospital.model.entity.Paciente;
 import com.hospital.hospital.model.repository.ExpedienteRepository;
 import com.hospital.hospital.model.repository.PacienteRepository;
 import com.hospital.hospital.util.JwtUtil;
+
 
 @Service
 public class ExpedienteService {
