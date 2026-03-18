@@ -32,7 +32,7 @@ public class ExpedienteService {
 
         // Buscar paciente por id_usuario
         Paciente idPaciente = pacienteRepository
-                .obtenerConUsuarioPorIdUsuario(idUsuario)
+                .obtenerConUsuario(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
         expediente.setIdPaciente(idPaciente);
