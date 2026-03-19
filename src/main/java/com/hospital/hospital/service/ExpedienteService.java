@@ -76,8 +76,8 @@ public class ExpedienteService {
             if (actualizado.getAnt_alergicos() != null)
                 existente.setAnt_alergicos(actualizado.getAnt_alergicos());
 
-            if (actualizado.getAnt_cronicas() != null)
-                existente.setAnt_cronicas(actualizado.getAnt_cronicas());
+            if (actualizado.getEnf_cronicas() != null)
+                existente.setEnf_cronicas(actualizado.getEnf_cronicas());
 
             if (actualizado.getAnt_ginecoobstetricos() != null)
                 existente.setAnt_ginecoobstetricos(actualizado.getAnt_ginecoobstetricos());
@@ -109,7 +109,7 @@ public class ExpedienteService {
         nuevo.setAnt_patologicos(actual.getAnt_patologicos());
         nuevo.setAnt_quirurgicos(actual.getAnt_quirurgicos());
         nuevo.setAnt_alergicos(actual.getAnt_alergicos());
-        nuevo.setAnt_cronicas(actual.getAnt_cronicas());
+        nuevo.setEnf_cronicas(actual.getEnf_cronicas());
         nuevo.setAnt_ginecoobstetricos(actual.getAnt_ginecoobstetricos());
         nuevo.setObservaciones(actual.getObservaciones());
         nuevo.setFechaApertura(actual.getFechaApertura());
@@ -146,8 +146,8 @@ public class ExpedienteService {
                     nuevo.setAnt_alergicos((String) valor);
                     break;
 
-                case "ant_cronicas":
-                     nuevo.setAnt_cronicas((String) valor); 
+                case "enf_cronicas":
+                     nuevo.setEnf_cronicas((String) valor); 
                     break;
 
                 case "ant_ginecoobstetricos":
