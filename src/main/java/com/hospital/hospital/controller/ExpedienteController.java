@@ -10,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.hospital.hospital.model.entity.Expediente;
 import com.hospital.hospital.service.ExpedienteService;
-import com.hospital.hospital.model.entity.Paciente;
 import com.hospital.hospital.service.PacienteService;
-import com.hospital.hospital.util.JwtUtil;
 
 @RestController
 @RequestMapping("/expedientes")

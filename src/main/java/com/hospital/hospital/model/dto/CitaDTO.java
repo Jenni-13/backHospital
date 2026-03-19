@@ -24,6 +24,7 @@ public class CitaDTO {
     private String nombrePaciente;
     private String nss;
     private String curp;
+    private LocalDate fechaNacimiento;
 
     public CitaDTO(com.hospital.hospital.model.entity.Cita cita) {
         this.idCita       = cita.getIdCita();
@@ -42,6 +43,7 @@ public class CitaDTO {
                     + " " + cita.getPaciente().getApMaterno();
             this.nss  = cita.getPaciente().getNss();
             this.curp = cita.getPaciente().getCurp();
+            this.fechaNacimiento = cita.getPaciente().getFechaNacimiento();
         }
     }
 }
