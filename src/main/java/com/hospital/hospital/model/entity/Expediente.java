@@ -54,7 +54,7 @@ public class Expediente {
     @JoinColumn(name = "id_medico", nullable = false)
     private Medico medico; 
 
-    @Column(name = "estado", length = 255, nullable = false, unique = true)
+    @Column(name = "estado", length = 255, nullable = false)
     private String estado;    
 
     public Expediente() {}
