@@ -1,14 +1,17 @@
 package com.hospital.hospital.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hospital.hospital.model.entity.Expediente;
 import com.hospital.hospital.model.entity.Paciente;
 import com.hospital.hospital.model.repository.ExpedienteRepository;
 import com.hospital.hospital.model.repository.PacienteRepository;
 import com.hospital.hospital.util.JwtUtil;
+
 
 @Service
 public class ExpedienteService {
@@ -22,7 +25,7 @@ public class ExpedienteService {
         this.pacienteRepository = pacienteRepository;
     }
 
-    // ✅ Guardar expediente
+    //Guardar expediente
     public Expediente saveExpediente(Expediente expediente) {
 
         Integer idUsuario = JwtUtil.getIdUsuario();
@@ -53,7 +56,7 @@ public class ExpedienteService {
         expedienteRepository.deleteById(id);
     }
 
-    // ✅ Update SIN tocar paciente (seguridad)
+    //Update SIN tocar paciente 
     public Expediente updateExpediente(Long id, Expediente actualizado) {
 
         return expedienteRepository.findById(id).map(existente -> {
@@ -82,10 +85,91 @@ public class ExpedienteService {
             if (actualizado.getObservaciones() != null)
                 existente.setObservaciones(actualizado.getObservaciones());
 
-            // 🚨 NO actualizar paciente aquí por seguridad
-
             return expedienteRepository.save(existente);
 
         }).orElse(null);
+    }
+
+    @Transactional
+    public Expediente actualizarExpediente(Long idExpediente, Map<String, Object> cambios) {
+
+        //Obtener expediente actual
+        Expediente actual = expedienteRepository.findById(idExpediente)
+            .orElseThrow(() -> new RuntimeException("Expediente no encontrado"));
+
+        //Desactivar el actual
+        actual.setEstado("DESACTIVADO");
+        expedienteRepository.save(actual);
+
+        //Clonar expediente
+        Expediente nuevo = new Expediente();
+
+        nuevo.setFolio(actual.getFolio());
+        nuevo.setAnt_heredofamiliares(actual.getAnt_heredofamiliares());
+        nuevo.setAnt_patologicos(actual.getAnt_patologicos());
+        nuevo.setAnt_quirurgicos(actual.getAnt_quirurgicos());
+        nuevo.setAnt_alergicos(actual.getAnt_alergicos());
+        nuevo.setAnt_cronicas(actual.getAnt_cronicas());
+        nuevo.setAnt_ginecoobstetricos(actual.getAnt_ginecoobstetricos());
+        nuevo.setObservaciones(actual.getObservaciones());
+        nuevo.setFechaApertura(actual.getFechaApertura());
+        nuevo.setIdPaciente(actual.getIdPaciente());
+        nuevo.setIdMedico(actual.getIdMedico());
+
+        nuevo.setEstado("ACTIVO");
+
+        // Aplicar cambios dinámicos
+        aplicarCambios(nuevo, cambios);
+
+        return expedienteRepository.save(nuevo);
+    } 
+
+    private void aplicarCambios(Expediente nuevo, Map<String, Object> cambios) {
+
+        cambios.forEach((campo, valor) -> {
+
+            switch (campo) {
+
+                case "ant_heredofamiliares":
+                    nuevo.setAnt_heredofamiliares((String) valor);
+                    break;
+
+                case "ant_patologicos":
+                    nuevo.setAnt_patologicos((String) valor);
+                    break;
+
+                case "ant_quirurgicos":
+                    nuevo.setAnt_quirurgicos((String) valor);
+                    break;
+
+                case "ant_alergicos":
+                    nuevo.setAnt_alergicos((String) valor);
+                    break;
+
+                case "ant_cronicas":
+                     nuevo.setAnt_cronicas((String) valor); 
+                    break;
+
+                case "ant_ginecoobstetricos":
+                    nuevo.setAnt_ginecoobstetricos((String) valor);
+                    break;
+
+                case "observaciones":
+                    nuevo.setObservaciones((String) valor);
+                    break;
+
+                case "estado":
+                    nuevo.setEstado((String) valor);
+                    break;
+
+                // NO modificar estos
+                case "id_expediente":
+                case "id_paciente":
+                    throw new RuntimeException("No se puede modificar este campo: " + campo);
+
+                default:
+                    throw new RuntimeException("Campo no válido: " + campo);
+            }
+        });
     }
 }

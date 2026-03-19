@@ -54,6 +54,9 @@ public class Expediente {
     @JoinColumn(name = "id_medico", nullable = false)
     private Medico medico; 
 
+    @Column(name = "estado", length = 255, nullable = false, unique = true)
+    private String estado;    
+
     public Expediente() {}
 
     @PrePersist
@@ -100,5 +103,9 @@ public class Expediente {
 
     public Medico getIdMedico() { return medico; }
     public void setIdMedico(Medico idMedico) { this.medico = idMedico; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+    
 
 }
