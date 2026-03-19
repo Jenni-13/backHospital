@@ -17,7 +17,6 @@ import com.hospital.hospital.model.repository.PacienteRepository;
 import com.hospital.hospital.model.repository.RecetaRepository;
 import com.hospital.hospital.model.repository.SignosVitalesRepository;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
