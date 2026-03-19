@@ -33,7 +33,7 @@ public class Expediente {
     private String ant_alergicos;
 
     @Column(columnDefinition = "TEXT")
-    private String enf_cronicas;
+    private String ant_cronicas;
 
     @Column(columnDefinition = "TEXT")
     private String ant_ginecoobstetricos;
@@ -83,8 +83,8 @@ public class Expediente {
     public String getAnt_alergicos() { return ant_alergicos; }
     public void setAnt_alergicos(String ant_alergicos) { this.ant_alergicos = ant_alergicos; }
 
-    public String getAnt_cronicas() { return enf_cronicas; }
-    public void setAnt_cronicas(String enf_cronicas) { this.enf_cronicas = enf_cronicas; }
+    public String getAnt_cronicas() { return ant_cronicas; }
+    public void setAnt_cronicas(String ant_cronicas) { this.ant_cronicas = ant_cronicas; }
 
     public String getAnt_ginecoobstetricos() { return ant_ginecoobstetricos; }
     public void setAnt_ginecoobstetricos(String ant_ginecoobstetricos) { this.ant_ginecoobstetricos = ant_ginecoobstetricos; }
